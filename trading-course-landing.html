@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AlphaEdge — Master the Markets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ── CSS Variables ── */
+  :root {
+    --gold:       #f0b429;
+    --gold-light: #fcd97a;
+    --teal:       #0ef0c0;
+    --bg-dark:    #050d1a;
+    --bg-mid:     #0a1628;
+    --glass-bg:   rgba(255,255,255,0.05);
+    --glass-border: rgba(255,255,255,0.12);
+    --glass-shadow: 0 8px 32px rgba(0,0,0,0.45);
+    --text-main:  #e8eef8;
+    --text-dim:   rgba(232,238,248,0.55);
+    --radius-lg:  20px;
+    --radius-xl:  32px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-main);
+    overflow-x: hidden;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-dark); }
+  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+  /* ── Noise texture overlay ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: 0.5;
+  }
+
+  /* ── Glassmorphism utility ── */
+  .glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    box-shadow: var(--glass-shadow);
+  }
+
+  /* ════════════════════════════
+     NAV
+  ════════════════════════════ */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    padding: 0 5%;
+    height: 72px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(5,13,26,0.65);
+    border-bottom: 1px solid var(--glass-border);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .nav-links {
+    display: flex; gap: 2rem; list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: color .2s;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+
+  .nav-cta {
+    background: linear-gradient(135deg, var(--gold), #e09000);
+    color: #050d1a;
+    border: none;
+    padding: 0.55rem 1.4rem;
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: opacity .2s, transform .2s;
+  }
+  .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  .hamburger {
+    display: none;
+    flex-direction: column; gap: 5px;
+    cursor: pointer; background: none; border: none; padding: 4px;
+  }
+  .hamburger span {
+    display: block; width: 24px; height: 2px;
+    background: var(--gold); border-radius: 2px;
+    transition: all .3s;
+  }
+
+  /* ════════════════════════════
+     HERO
+  ════════════════════════════ */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 120px 5% 80px;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background-image:
+      url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1400&q=80');
+    background-size: cover; background-position: center;
+    filter: brightness(0.25) saturate(0.6);
+    z-index: 0;
+  }
+
+  /* Gradient overlay on top of bg image */
+  .hero-bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(5,13,26,0.9) 0%,
+      rgba(10,22,40,0.6) 60%,
+      rgba(240,180,41,0.08) 100%
+    );
+  }
+
+  /* Glowing orbs */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none; z-index: 0;
+  }
+  .orb-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(240,180,41,0.18), transparent 70%);
+    top: -100px; right: 10%;
+    animation: float1 8s ease-in-out infinite;
+  }
+  .orb-2 {
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(14,240,192,0.12), transparent 70%);
+    bottom: 5%; left: 5%;
+    animation: float2 10s ease-in-out infinite;
+  }
+
+  @keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(30px)} }
+  @keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-25px)} }
+
+  .hero-content {
+    position: relative; z-index: 1;
+    max-width: 700px;
+    animation: fadeUp 1s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(30px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: rgba(240,180,41,0.1);
+    border: 1px solid rgba(240,180,41,0.3);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-badge span { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(0.8)} }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -1.5px;
+    margin-bottom: 1.5rem;
+    color: #fff;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light), #fff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+    line-height: 1.75;
+    color: var(--text-dim);
+    max-width: 520px;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-actions {
+    display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
+  }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, var(--gold), #d98a00);
+    color: #050d1a;
+    border: none;
+    padding: 0.9rem 2rem;
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform .25s, box-shadow .25s;
+    box-shadow: 0 0 30px rgba(240,180,41,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 0 50px rgba(240,180,41,0.5); }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--text-main);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border: 1px solid var(--glass-border);
+    padding: 0.9rem 1.8rem;
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+    transition: background .25s;
+  }
+  .btn-ghost:hover { background: var(--glass-bg); }
+
+  .play-icon {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--glass-bg); border: 1px solid var(--glass-border);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+  }
+
+  /* Floating stats card */
+  .hero-stats-card {
+    position: absolute;
+    right: 5%; bottom: 12%;
+    padding: 1.4rem 1.8rem;
+    border-radius: var(--radius-lg);
+    min-width: 260px;
+    z-index: 2;
+    animation: fadeUp 1s .4s ease both;
+  }
+
+  .stats-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+  .stat-label { font-size: 0.72rem; color: var(--text-dim); margin-top: 4px; letter-spacing: 0.5px; }
+
+  /* ════════════════════════════
+     TICKER TAPE
+  ════════════════════════════ */
+  .ticker-wrap {
+    overflow: hidden;
+    background: rgba(240,180,41,0.07);
+    border-top: 1px solid rgba(240,180,41,0.2);
+    border-bottom: 1px solid rgba(240,180,41,0.2);
+    padding: 12px 0;
+  }
+
+  .ticker {
+    display: flex; gap: 4rem; white-space: nowrap;
+    animation: ticker 25s linear infinite;
+  }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  .tick-item {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.82rem; font-weight: 600; letter-spacing: 0.5px;
+    color: var(--text-dim);
+  }
+  .tick-sym { color: var(--gold-light); font-weight: 700; }
+  .tick-up   { color: #22c55e; }
+  .tick-down { color: #ef4444; }
+
+  /* ════════════════════════════
+     SECTION COMMONS
+  ════════════════════════════ */
+  section { padding: 100px 5%; }
+
+  .section-label {
+    font-size: 0.75rem; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900; line-height: 1.15;
+    color: #fff; letter-spacing: -0.5px;
+    margin-bottom: 1rem;
+  }
+
+  .section-sub {
+    font-size: 1rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    max-width: 520px;
+  }
+
+  /* ════════════════════════════
+     COURSES
+  ════════════════════════════ */
+  .courses { background: var(--bg-mid); }
+
+  .courses-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 1.5rem;
+    margin-bottom: 3.5rem;
+  }
+
+  .courses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .course-card {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform .35s, box-shadow .35s;
+    position: relative;
+    cursor: pointer;
+  }
+  .course-card:hover { transform: translateY(-8px); box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+
+  .course-img {
+    width: 100%; height: 200px;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.75) saturate(0.8);
+    transition: filter .35s;
+  }
+  .course-card:hover .course-img { filter: brightness(0.9) saturate(1); }
+
+  .course-body {
+    padding: 1.4rem;
+    background: rgba(10,22,40,0.85);
+    backdrop-filter: blur(12px);
+  }
+
+  .course-tag {
+    display: inline-block;
+    padding: 3px 10px; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.8px;
+    text-transform: uppercase;
+    background: rgba(240,180,41,0.15);
+    color: var(--gold);
+    border: 1px solid rgba(240,180,41,0.3);
+    margin-bottom: 0.75rem;
+  }
+
+  .course-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.6rem;
+    line-height: 1.3;
+  }
+
+  .course-meta {
+    display: flex; gap: 1rem;
+    font-size: 0.78rem; color: var(--text-dim);
+    margin-bottom: 1rem;
+  }
+
+  .course-meta span { display: flex; align-items: center; gap: 4px; }
+
+  .course-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--glass-border);
+  }
+
+  .course-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .course-enroll {
+    font-size: 0.8rem; font-weight: 600;
+    color: var(--bg-dark);
+    background: var(--gold);
+    border: none; border-radius: 50px;
+    padding: 6px 16px; cursor: pointer;
+    transition: opacity .2s;
+  }
+  .course-enroll:hover { opacity: 0.85; }
+
+  /* ════════════════════════════
+     WHY SECTION
+  ════════════════════════════ */
+  .why { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+
+  .why-image-wrap {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
+
+  .why-image-wrap img {
+    width: 100%; height: 520px;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.7) saturate(0.8);
+  }
+
+  .why-image-badge {
+    position: absolute; bottom: 24px; left: 24px;
+    padding: 1rem 1.4rem;
+    border-radius: var(--radius-lg);
+    display: flex; align-items: center; gap: 1rem;
+  }
+
+  .badge-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--gold), #d98a00);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  .badge-text .big { font-weight: 700; font-size: 1rem; color: #fff; }
+  .badge-text .small { font-size: 0.75rem; color: var(--text-dim); }
+
+  .why-features { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 2.5rem; }
+
+  .feature-row {
+    display: flex; gap: 1rem; align-items: flex-start;
+    padding: 1.2rem;
+    border-radius: var(--radius-lg);
+    transition: background .2s;
+  }
+  .feature-row:hover { background: var(--glass-bg); }
+
+  .feat-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: rgba(240,180,41,0.12);
+    border: 1px solid rgba(240,180,41,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0;
+  }
+
+  .feat-title { font-weight: 600; font-size: 0.95rem; color: #fff; margin-bottom: 3px; }
+  .feat-desc  { font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; }
+
+  /* ════════════════════════════
+     TESTIMONIALS
+  ════════════════════════════ */
+  .testimonials { background: var(--bg-mid); text-align: center; }
+
+  .testimonials .section-title,
+  .testimonials .section-label { text-align: center; }
+  .testimonials .section-sub { margin: 0 auto 3.5rem; }
+
+  .test-grid {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem;
+    text-align: left;
+  }
+
+  .test-card {
+    padding: 1.8rem;
+    border-radius: var(--radius-lg);
+    transition: transform .3s;
+  }
+  .test-card:hover { transform: translateY(-5px); }
+
+  .stars { color: var(--gold); font-size: 0.85rem; letter-spacing: 2px; margin-bottom: 1rem; }
+
+  .test-quote {
+    font-size: 0.9rem; color: var(--text-dim);
+    line-height: 1.75; margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+
+  .test-author {
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .author-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--gold);
+  }
+
+  .author-name { font-weight: 700; font-size: 0.9rem; color: #fff; }
+  .author-role { font-size: 0.75rem; color: var(--text-dim); }
+
+  /* ════════════════════════════
+     CTA BANNER
+  ════════════════════════════ */
+  .cta-section {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding: 100px 5%;
+  }
+
+  .cta-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=1400&q=80');
+    background-size: cover; background-position: center;
+    filter: brightness(0.18) saturate(0.4);
+  }
+
+  .cta-bg::after {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(240,180,41,0.12), transparent 70%);
+  }
+
+  .cta-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+
+  .cta-inner h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.5px;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+  }
+
+  .cta-inner p { font-size: 1rem; color: var(--text-dim); margin-bottom: 2.5rem; line-height: 1.7; }
+
+  .cta-input-wrap {
+    display: flex; gap: 0.75rem; max-width: 480px; margin: 0 auto;
+    flex-wrap: wrap; justify-content: center;
+  }
+
+  .cta-input {
+    flex: 1; min-width: 200px;
+    padding: 0.85rem 1.2rem;
+    border-radius: 50px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(12px);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .cta-input::placeholder { color: var(--text-dim); }
+  .cta-input:focus { border-color: var(--gold); }
+
+  /* ════════════════════════════
+     FOOTER
+  ════════════════════════════ */
+  footer {
+    background: #030910;
+    padding: 60px 5% 30px;
+    border-top: 1px solid var(--glass-border);
+  }
+
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .footer-brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; max-width: 240px; }
+
+  .footer-col h4 { font-size: 0.8rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .footer-col ul a { text-decoration: none; color: var(--text-dim); font-size: 0.85rem; transition: color .2s; }
+  .footer-col ul a:hover { color: var(--gold); }
+
+  .footer-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--glass-border);
+    font-size: 0.78rem; color: var(--text-dim);
+  }
+
+  /* ════════════════════════════
+     MEDIA QUERIES
+  ════════════════════════════ */
+  @media (max-width: 1100px) {
+    .courses-grid { grid-template-columns: repeat(2, 1fr); }
+    .why          { gap: 50px; }
+    .footer-grid  { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 900px) {
+    .why { grid-template-columns: 1fr; }
+    .why-image-wrap img { height: 380px; }
+    .test-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero-stats-card { position: static; margin-top: 2.5rem; width: 100%; }
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 4%; }
+    .nav-links { display: none; }
+    .nav-cta   { display: none; }
+    .hamburger { display: flex; }
+
+    section { padding: 70px 4%; }
+
+    .hero { flex-direction: column; padding: 100px 4% 60px; }
+    .hero h1 { font-size: 2.6rem; }
+
+    .courses-grid { grid-template-columns: 1fr; }
+
+    .test-grid { grid-template-columns: 1fr; }
+
+    .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .footer-bottom { flex-direction: column; text-align: center; }
+  }
+
+  @media (max-width: 500px) {
+    .hero h1  { font-size: 2.1rem; }
+    .hero p   { font-size: 0.95rem; }
+    .hero-actions { flex-direction: column; }
+    .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .cta-input-wrap { flex-direction: column; }
+    .cta-input, .btn-primary { width: 100%; border-radius: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="nav-logo">AlphaEdge</div>
+  <ul class="nav-links">
+    <li><a href="#">Courses</a></li>
+    <li><a href="#">Strategies</a></li>
+    <li><a href="#">Mentors</a></li>
+    <li><a href="#">Community</a></li>
+    <li><a href="#">Blog</a></li>
+  </ul>
+  <button class="nav-cta">Get Started</button>
+  <button class="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span></span> Live Market Updates Included
+    </div>
+    <h1>Trade Smarter.<br>Build <em>Real Wealth.</em></h1>
+    <p>From chart reading to advanced options strategies — AlphaEdge gives you the frameworks, mentorship, and community to trade with confidence.</p>
+    <div class="hero-actions">
+      <a href="#" class="btn-primary">
+        Start Learning Free
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#" class="btn-ghost">
+        <span class="play-icon">▶</span>
+        Watch Demo
+      </a>
+    </div>
+  </div>
+
+  <!-- Floating stats -->
+  <div class="hero-stats-card glass">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-num">48K+</div>
+        <div class="stat-label">Active Students</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">94%</div>
+        <div class="stat-label">Success Rate</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">120+</div>
+        <div class="stat-label">Video Lessons</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">4.9★</div>
+        <div class="stat-label">Avg Rating</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TICKER ═══ -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <!-- Duplicated for seamless loop -->
+    <span class="tick-item"><span class="tick-sym">AAPL</span> 192.45 <span class="tick-up">▲ 1.2%</span></span>
+    <span class="tick-item"><span class="tick-sym">TSLA</span> 248.30 <span class="tick-down">▼ 0.8%</span></span>
+    <span class="tick-item"><span class="tick-sym">NVDA</span> 875.20 <span class="tick-up">▲ 3.4%</span></span>
+    <span class="tick-item"><span class="tick-sym">AMZN</span> 186.10 <span class="tick-up">▲ 0.6%</span></span>
+    <span class="tick-item"><span class="tick-sym">MSFT</span> 415.80 <span class="tick-up">▲ 1.8%</span></span>
+    <span class="tick-item"><span class="tick-sym">BTC</span> $67,340 <span class="tick-up">▲ 4.1%</span></span>
+    <span class="tick-item"><span class="tick-sym">ETH</span> $3,820 <span class="tick-down">▼ 1.1%</span></span>
+    <span class="tick-item"><span class="tick-sym">SPY</span> 528.90 <span class="tick-up">▲ 0.9%</span></span>
+    <!-- duplicate -->
+    <span class="tick-item"><span class="tick-sym">AAPL</span> 192.45 <span class="tick-up">▲ 1.2%</span></span>
+    <span class="tick-item"><span class="tick-sym">TSLA</span> 248.30 <span class="tick-down">▼ 0.8%</span></span>
+    <span class="tick-item"><span class="tick-sym">NVDA</span> 875.20 <span class="tick-up">▲ 3.4%</span></span>
+    <span class="tick-item"><span class="tick-sym">AMZN</span> 186.10 <span class="tick-up">▲ 0.6%</span></span>
+    <span class="tick-item"><span class="tick-sym">MSFT</span> 415.80 <span class="tick-up">▲ 1.8%</span></span>
+    <span class="tick-item"><span class="tick-sym">BTC</span> $67,340 <span class="tick-up">▲ 4.1%</span></span>
+    <span class="tick-item"><span class="tick-sym">ETH</span> $3,820 <span class="tick-down">▼ 1.1%</span></span>
+    <span class="tick-item"><span class="tick-sym">SPY</span> 528.90 <span class="tick-up">▲ 0.9%</span></span>
+  </div>
+</div>
+
+<!-- ═══ COURSES ═══ -->
+<section class="courses">
+  <div class="courses-header">
+    <div>
+      <div class="section-label">Our Curriculum</div>
+      <h2 class="section-title">Choose Your<br>Trading Path</h2>
+    </div>
+    <p class="section-sub">Whether you're a complete beginner or a seasoned trader looking to refine your edge, we have the right course for you.</p>
+  </div>
+
+  <div class="courses-grid">
+    <!-- Card 1 -->
+    <div class="course-card glass">
+      <img class="course-img"
+        src="https://images.unsplash.com/photo-1642790551116-18e150f248e3?w=600&q=80"
+        alt="Technical Analysis">
+      <div class="course-body">
+        <span class="course-tag">Beginner</span>
+        <div class="course-title">Technical Analysis Masterclass</div>
+        <div class="course-meta">
+          <span>📹 32 lessons</span>
+          <span>⏱ 18 hrs</span>
+          <span>⭐ 4.9</span>
+        </div>
+        <div class="course-footer">
+          <div class="course-price">$149</div>
+          <button class="course-enroll">Enroll Now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="course-card glass">
+      <img class="course-img"
+        src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=600&q=80"
+        alt="Options Trading">
+      <div class="course-body">
+        <span class="course-tag">Intermediate</span>
+        <div class="course-title">Options Strategies: Calls, Puts & Beyond</div>
+        <div class="course-meta">
+          <span>📹 48 lessons</span>
+          <span>⏱ 26 hrs</span>
+          <span>⭐ 4.8</span>
+        </div>
+        <div class="course-footer">
+          <div class="course-price">$249</div>
+          <button class="course-enroll">Enroll Now</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="course-card glass">
+      <img class="course-img"
+        src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&q=80"
+        alt="Algo Trading">
+      <div class="course-body">
+        <span class="course-tag">Advanced</span>
+        <div class="course-title">Algorithmic Trading with Python</div>
+        <div class="course-meta">
+          <span>📹 60 lessons</span>
+          <span>⏱ 34 hrs</span>
+          <span>⭐ 4.9</span>
+        </div>
+        <div class="course-footer">
+          <div class="course-price">$399</div>
+          <button class="course-enroll">Enroll Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WHY US ═══ -->
+<section>
+  <div class="why">
+    <div class="why-image-wrap glass">
+      <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=700&q=80" alt="Trading setup">
+      <div class="why-image-badge glass">
+        <div class="badge-icon">📈</div>
+        <div class="badge-text">
+          <div class="big">$2.4M+ in student profits</div>
+          <div class="small">Reported in the last 12 months</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="why-content">
+      <div class="section-label">Why AlphaEdge</div>
+      <h2 class="section-title">An Edge That<br>Actually Works</h2>
+      <p class="section-sub">We don't teach theory. We teach battle-tested strategies used by professional traders — with live trade examples, real P&L, and accountability.</p>
+
+      <div class="why-features">
+        <div class="feature-row">
+          <div class="feat-icon">🎯</div>
+          <div>
+            <div class="feat-title">Live Trade Room Access</div>
+            <div class="feat-desc">Join daily live sessions with professional traders and watch real trades unfold in the market.</div>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feat-icon">🧠</div>
+          <div>
+            <div class="feat-title">AI-Powered Trade Scanner</div>
+            <div class="feat-desc">Get real-time alerts on high-probability setups filtered by your personal strategy.</div>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feat-icon">🤝</div>
+          <div>
+            <div class="feat-title">1-on-1 Mentorship</div>
+            <div class="feat-desc">Every premium student gets direct access to a mentor with 10+ years of trading experience.</div>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feat-icon">🔁</div>
+          <div>
+            <div class="feat-title">Lifetime Updates</div>
+            <div class="feat-desc">Markets evolve, and so do our courses. Get free access to every future update, forever.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIALS ═══ -->
+<section class="testimonials">
+  <div class="section-label">Student Results</div>
+  <h2 class="section-title">Real People,<br>Real Returns</h2>
+  <p class="section-sub">Over 48,000 students have transformed their trading journey with AlphaEdge.</p>
+
+  <div class="test-grid">
+    <div class="test-card glass">
+      <div class="stars">★★★★★</div>
+      <p class="test-quote">"I went from consistently losing money to a 34% return in my first 6 months after completing the Technical Analysis course. The live trade room is priceless."</p>
+      <div class="test-author">
+        <img class="author-avatar"
+          src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&q=80" alt="Alex M.">
+        <div>
+          <div class="author-name">Alex Morgan</div>
+          <div class="author-role">Day Trader, New York</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-card glass">
+      <div class="stars">★★★★★</div>
+      <p class="test-quote">"The Options Strategies course completely changed how I manage risk. I now generate consistent monthly income from selling premium. Best investment I've made."</p>
+      <div class="test-author">
+        <img class="author-avatar"
+          src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&q=80" alt="Priya K.">
+        <div>
+          <div class="author-name">Priya Kapoor</div>
+          <div class="author-role">Swing Trader, London</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="test-card glass">
+      <div class="stars">★★★★★</div>
+      <p class="test-quote">"The Python algo trading course helped me build a bot that trades for me while I sleep. Made back the course fee in the first week alone. Absolutely wild."</p>
+      <div class="test-author">
+        <img class="author-avatar"
+          src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&q=80" alt="James T.">
+        <div>
+          <div class="author-name">James Torres</div>
+          <div class="author-role">Quant Trader, Austin</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section class="cta-section">
+  <div class="cta-bg"></div>
+  <div class="cta-inner">
+    <div class="section-label" style="justify-content:center;display:flex;">Limited Time Offer</div>
+    <h2>Start Trading Like a<br>Pro — Risk Free</h2>
+    <p>Join over 48,000 students already on their journey. Get 7 days of full access completely free. No credit card required.</p>
+    <div class="cta-input-wrap">
+      <input class="cta-input" type="email" placeholder="Enter your email address…">
+      <a href="#" class="btn-primary" style="flex-shrink:0">Claim Free Access</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">AlphaEdge</div>
+      <p class="footer-tagline">The premier trading education platform for those serious about building lasting wealth through the markets.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Courses</h4>
+      <ul>
+        <li><a href="#">Technical Analysis</a></li>
+        <li><a href="#">Options Trading</a></li>
+        <li><a href="#">Algo Trading</a></li>
+        <li><a href="#">Forex Mastery</a></li>
+        <li><a href="#">Crypto Markets</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Our Mentors</a></li>
+        <li><a href="#">Success Stories</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">Help Center</a></li>
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Use</a></li>
+        <li><a href="#">Refund Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 AlphaEdge, Inc. All rights reserved.</span>
+    <span>Risk Disclaimer: Trading involves significant risk. Past performance is not indicative of future results.</span>
+  </div>
+</footer>
+
+</body>
+</html>
